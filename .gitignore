@@ -1,0 +1,63 @@
+# Default ignore patterns for Xcode projects
+
+# Built Products
+build/
+DerivedData/
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# User-specific files
+*.xcuserdatad/
+*.xcuserstate
+
+# Xcode Cache Files
+# These might be found inside .xcodeproj or .xcworkspace bundles
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+
+# Interface Builder SIB files (often generated)
+*.sib
+
+# Swift Package Manager dependencies
+# If you use SwiftPM, this folder can be large and should be ignored
+.build/
+
+# CocoaPods dependencies
+# If you use CocoaPods, the Pods directory should be ignored
+Pods/
+
+# Carthage dependencies
+# If you use Carthage, the Build directory should be ignored
+Carthage/Build/
+
+# Playgrounds
+# Sometimes you might want to ignore entire playgrounds if they are just scratchpads
+# *.playground/
+
+# macOS system files (often created by Finder)
+.DS_Store
+
+# Crash reports
+*.crash
+
+# Profiling data
+*.trace
+
+# --- Handling .plist files ---
+# WARNING: Generally, you DO NOT want to ignore essential files like Info.plist.
+# The pattern below ignores *all* .plist files by default,
+# BUT then negates (does NOT ignore) any file specifically named Info.plist.
+# This is a common pattern if you have other temporary or generated .plist files
+# you want to exclude, but want to keep the crucial Info.plist files.
+
+# Ignore all .plist files
+*.plist
+
+# BUT, do NOT ignore the essential Info.plist files
+!*/Info.plist
+
+# If you only have Info.plist and no other .plist files to ignore,
+# you can remove the two lines above and ignore specific non-essential
+# .plist files individually if they arise.

@@ -6,6 +6,14 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		436DD08D2DC4F5C600CA7211 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 436DD08C2DC4F5C600CA7211 /* FirebaseAnalytics */; };
+		436DD08F2DC4F5C600CA7211 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 436DD08E2DC4F5C600CA7211 /* FirebaseAuth */; };
+		436DD0912DC4F5C600CA7211 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 436DD0902DC4F5C600CA7211 /* FirebaseCore */; };
+		436DD0932DC4F5C600CA7211 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 436DD0922DC4F5C600CA7211 /* FirebaseFirestore */; };
+		436DD0982DC4F7B000CA7211 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 436DD0972DC4F7AC00CA7211 /* .gitignore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		436DD0602DC4F0FD00CA7211 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,11 +35,33 @@
 		436DD0522DC4F0FC00CA7211 /* the-coffee-project.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "the-coffee-project.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		436DD05F2DC4F0FD00CA7211 /* the-coffee-projectTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "the-coffee-projectTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		436DD0692DC4F0FD00CA7211 /* the-coffee-projectUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "the-coffee-projectUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		436DD0972DC4F7AC00CA7211 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		436DD0942DC4F6EC00CA7211 /* Exceptions for "the-coffee-project" folder in "the-coffee-projectTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"GoogleService-Info.plist",
+			);
+			target = 436DD05E2DC4F0FD00CA7211 /* the-coffee-projectTests */;
+		};
+		436DD0952DC4F6EC00CA7211 /* Exceptions for "the-coffee-project" folder in "the-coffee-projectUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"GoogleService-Info.plist",
+			);
+			target = 436DD0682DC4F0FD00CA7211 /* the-coffee-projectUITests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		436DD0542DC4F0FC00CA7211 /* the-coffee-project */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				436DD0942DC4F6EC00CA7211 /* Exceptions for "the-coffee-project" folder in "the-coffee-projectTests" target */,
+				436DD0952DC4F6EC00CA7211 /* Exceptions for "the-coffee-project" folder in "the-coffee-projectUITests" target */,
+			);
 			path = "the-coffee-project";
 			sourceTree = "<group>";
 		};
@@ -52,6 +82,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				436DD08D2DC4F5C600CA7211 /* FirebaseAnalytics in Frameworks */,
+				436DD0932DC4F5C600CA7211 /* FirebaseFirestore in Frameworks */,
+				436DD0912DC4F5C600CA7211 /* FirebaseCore in Frameworks */,
+				436DD08F2DC4F5C600CA7211 /* FirebaseAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,6 +109,7 @@
 		436DD0492DC4F0FC00CA7211 = {
 			isa = PBXGroup;
 			children = (
+				436DD0972DC4F7AC00CA7211 /* .gitignore */,
 				436DD0542DC4F0FC00CA7211 /* the-coffee-project */,
 				436DD0622DC4F0FD00CA7211 /* the-coffee-projectTests */,
 				436DD06C2DC4F0FD00CA7211 /* the-coffee-projectUITests */,
@@ -112,6 +147,10 @@
 			);
 			name = "the-coffee-project";
 			packageProductDependencies = (
+				436DD08C2DC4F5C600CA7211 /* FirebaseAnalytics */,
+				436DD08E2DC4F5C600CA7211 /* FirebaseAuth */,
+				436DD0902DC4F5C600CA7211 /* FirebaseCore */,
+				436DD0922DC4F5C600CA7211 /* FirebaseFirestore */,
 			);
 			productName = "the-coffee-project";
 			productReference = 436DD0522DC4F0FC00CA7211 /* the-coffee-project.app */;
@@ -195,6 +234,9 @@
 			);
 			mainGroup = 436DD0492DC4F0FC00CA7211;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				436DD08B2DC4F5C600CA7211 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 436DD0532DC4F0FC00CA7211 /* Products */;
 			projectDirPath = "";
@@ -212,6 +254,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				436DD0982DC4F7B000CA7211 /* .gitignore in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -407,7 +450,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "third-places.the-coffee-project";
+				PRODUCT_BUNDLE_IDENTIFIER = "third-places.the-coffee-project-ios";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -434,7 +477,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "third-places.the-coffee-project";
+				PRODUCT_BUNDLE_IDENTIFIER = "third-places.the-coffee-project-ios";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -550,6 +593,40 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		436DD08B2DC4F5C600CA7211 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.12.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		436DD08C2DC4F5C600CA7211 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 436DD08B2DC4F5C600CA7211 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		436DD08E2DC4F5C600CA7211 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 436DD08B2DC4F5C600CA7211 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		436DD0902DC4F5C600CA7211 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 436DD08B2DC4F5C600CA7211 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		436DD0922DC4F5C600CA7211 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 436DD08B2DC4F5C600CA7211 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 436DD04A2DC4F0FC00CA7211 /* Project object */;
 }
