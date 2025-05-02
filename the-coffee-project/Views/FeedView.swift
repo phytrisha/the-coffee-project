@@ -8,54 +8,79 @@
 import SwiftUI
 
 struct FeedView: View {
-    @StateObject var fetcher = CafeFetcher()
-    
+    @StateObject var fetcher = CafeFetcher() // Your data fetcher
+
     var body: some View {
-        // Using a NavigationView to potentially handle a title,
-        // though the image shows a custom top area.
-        // For simplicity, we'll create a custom top area structure.
-        VStack(alignment: .leading) {
-            // MARK: - Top Area (Placeholder)
-            // In a real app, this would likely be a custom view or part of a NavigationView setup
-            TopHeaderView() // A placeholder for the top section
+        // Wrap the entire content in a NavigationView
+        NavigationView {
+            VStack(alignment: .leading) {
+                // MARK: - Top Area (Placeholder)
+                // Keeping your custom header structure
+                // TopHeaderView()
 
-            // MARK: - Cafés Around You Section
-            Text("Cafés around you")
-                .font(.title2)
-                .padding(.leading) // Add some padding to align with the image
-                .padding(.top)
+                // MARK: - Cafés Around You Section
+                Text("Featured Cafés")
+                    .font(.title2)
+                    .padding(.leading)
+                    .padding(.top)
 
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 15) { // Add spacing between cards
-                    // Replace with actual data later
-                    ForEach(fetcher.cafes) { cafe in
-                        CafeCard(cafe: cafe) // Pass the individual cafe object
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 15) {
+                        ForEach(fetcher.cafes) { cafe in
+                            // Only show featured cafes
+                            if cafe.featured ?? false { // Use nil coalescing for optional Bool
+                                // Wrap the CafeCard in a NavigationLink
+                                NavigationLink {
+                                    // This is the DESTINATION view when the card is tapped
+                                    CafeDetailView(cafe: cafe) // Navigate to CafeDetailView, passing the cafe
+                                } label: {
+                                    // This is the LABEL - the content that is displayed and tappable
+                                    CafeCard(cafe: cafe) // Your existing CafeCard
+                                        // Apply .foregroundColor(.primary) to prevent the default blue tint
+                                        // applied by NavigationLink to its label content
+                                        .foregroundColor(.primary)
+                                }
+                                // Remove the .buttonStyle(.plain) if you added it previously -
+                                // the .foregroundColor(.primary) handles the styling
+                            }
+                        }
                     }
+                    .padding(.horizontal)
                 }
-                .padding(.horizontal) // Add horizontal padding to the ScrollView content
-            }
 
-            // MARK: - Order Again Section
-            Text("Order again")
-                .font(.title2)
-                .padding(.leading) // Add some padding to align with the image
-                .padding(.top)
+                // MARK: - Order Again Section
+                Text("Order again")
+                    .font(.title2)
+                    .padding(.leading)
+                    .padding(.top)
 
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 15) { // Add spacing between cards
-                    // Replace with actual data later
-                    ForEach(0..<5) { item in // Example: 5 placeholder cards
-                        DrinkCard()
+                // This section remains as is, assuming these cards are not
+                // currently designed to navigate to a CafeDetailView
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 15) {
+                        ForEach(0..<5) { item in // Example: 5 placeholder cards
+                            DrinkCard() // Assuming you have a DrinkCard view
+                        }
                     }
+                    .padding(.horizontal)
                 }
-                .padding(.horizontal) // Add horizontal padding to the ScrollView content
-            }
 
-            Spacer() // Pushes content to the top
+                Spacer() // Pushes content to the top
 
-        }
-        // You might want to adjust the background color of the VStack
-        // to match the image if it's not the default system background.
+            } // End VStack
+            // You can add a navigation title here if you want one for the FeedView
+            // Note: This will appear in the standard navigation bar area.
+            // If your TopHeaderView completely replaces the standard bar visually,
+            // you might set the title to "" or hide the navigation bar for this view.
+             .navigationTitle("Feed") // Example title
+             .navigationBarTitleDisplayMode(.inline) // Optional: Smaller title
+            // If you want to hide the default navigation bar entirely because
+            // TopHeaderView replaces it:
+            // .navigationBarHidden(true) // Note: navigationBarHidden is deprecated
+            // A modern approach would involve customizing the toolbar instead.
+        } // End NavigationView
+         // The fetcher is likely initialized and fetching in its init()
+         // .onAppear { fetcher.fetchCafes() } // If you prefer fetching on appear
     }
 }
 

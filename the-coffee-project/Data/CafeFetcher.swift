@@ -22,24 +22,24 @@ class CafeFetcher: ObservableObject {
         // Remove previous listener if it exists (important for real-time updates)
         listenerRegistration?.remove()
 
-        listenerRegistration = db.collection("shops") // Reference your collection name
-            .addSnapshotListener { (querySnapshot, error) in
-                guard let documents = querySnapshot?.documents else {
-                    print("Error fetching documents: \(error?.localizedDescription ?? "Unknown error")")
-                    return
-                }
+        listenerRegistration = db.collection("shops")
+                .addSnapshotListener { (querySnapshot, error) in
+                    guard let documents = querySnapshot?.documents else {
+                        print("Error fetching documents: \(error?.localizedDescription ?? "Unknown error")")
+                        return
+                    }
 
-                // Map documents to your Cafe model
-                self.cafes = documents.compactMap { document in
-                    do {
-                        // Use data(as:) to decode the document directly into your Cafe struct
-                        return try document.data(as: Cafe.self)
-                    } catch {
-                        print("Error decoding document \(document.documentID): \(error.localizedDescription)")
-                        return nil // Skip this document if decoding fails
+                    self.cafes = documents.compactMap { document in
+                        do {
+                            let cafe = try document.data(as: Cafe.self)
+                            return cafe
+                        } catch {
+                            print("Error decoding document \(document.documentID): \(error.localizedDescription)")
+                            // Pay close attention to decoding errors here!
+                            return nil
+                        }
                     }
                 }
-            }
     }
 
     // Clean up the listener when the object is deallocated
