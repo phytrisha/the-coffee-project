@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct FeedView: View {
+    @StateObject var fetcher = CafeFetcher()
+    
     var body: some View {
         // Using a NavigationView to potentially handle a title,
         // though the image shows a custom top area.
@@ -26,8 +28,8 @@ struct FeedView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 15) { // Add spacing between cards
                     // Replace with actual data later
-                    ForEach(0..<5) { item in // Example: 5 placeholder cards
-                        CafeCard()
+                    ForEach(fetcher.cafes) { cafe in
+                        CafeCard(cafe: cafe) // Pass the individual cafe object
                     }
                 }
                 .padding(.horizontal) // Add horizontal padding to the ScrollView content
