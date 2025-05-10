@@ -25,11 +25,10 @@ struct DrinkCard: View {
             Text("Description text of drink with a maximum of two l...")
                 .font(.caption)
                 .foregroundColor(.gray)
-                .lineLimit(2) // Limit description to two lines
-                .frame(width: 150, alignment: .leading) // Set a fixed width for consistency
+                .lineLimit(2)
+                .frame(width: 150, alignment: .leading)
         }
-        .background(Color.white) // Card background color
-        .cornerRadius(10) // Rounded corners for the card
-        .shadow(radius: 3) // Add a subtle shadow
+        .background(Color.white)
+        .cornerRadius(10)
     }
 }

@@ -8,19 +8,15 @@
 import SwiftUI
 
 struct CafeDetailView: View {
-    let cafe: Cafe // Still receive the parent Cafe object
-    @StateObject var detailFetcher = CafeDetailFetcher() // Instantiate the new fetcher
+    let cafe: Cafe
+    @StateObject var detailFetcher = CafeDetailFetcher()
 
     var body: some View {
         VStack {
-            // You can still display parent cafe details here
-            // Text(cafe.description ?? "No description available.")
-            // AsyncImage for cafe image... etc.
-
             // Display the list of drinks from the detailFetcher
             if !detailFetcher.drinks.isEmpty {
                 List {
-                    Section("Menu") {
+                    Section("All Drinks") {
                         // Iterate over the drinks fetched by detailFetcher
                         ForEach(detailFetcher.drinks) { drink in
                             // Display properties from the Drink object

@@ -12,27 +12,27 @@ struct ContentView: View {
         TabView {
             FeedView()
                 .tabItem {
-                    Label("Feed", systemImage: "house")
+                    Image("Coffee Cup")
                 }
 
             ExploreView()
                 .tabItem {
-                    Label("Explore", systemImage: "map")
+                    Image("Location")
                 }
 
             SearchView()
                 .tabItem {
-                    Label("Search", systemImage: "magnifyingglass")
+                    Image("Search")
                 }
             
             FavoritesView()
                 .tabItem {
-                    Label("Favorites", systemImage: "heart")
+                    Image("Favorite")
                 }
             
             ProfileView()
                 .tabItem {
-                    Label("Profile", systemImage: "person")
+                    Image("User")
                 }
         }
     }

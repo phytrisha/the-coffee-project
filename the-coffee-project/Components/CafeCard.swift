@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct CafeCard: View {
-    // The card now takes a Cafe object
     var cafe: Cafe
 
     var body: some View {
@@ -44,20 +43,20 @@ struct CafeCard: View {
             }
 
 
-            Text(cafe.name) // Use the cafe's name
+            Text(cafe.name)
                 .font(.headline)
                 .padding(.top, 5)
             
-            Text(cafe.description) // Use the cafe's description
+            Text(cafe.description)
                 .font(.caption)
                 .foregroundColor(.gray)
-                .lineLimit(2) // Limit description to two lines
-                .frame(width: 200, alignment: .leading) // Set a fixed width for consistency
+                .lineLimit(2)
+                .frame(width: 200, alignment: .leading)
 
             // You could add the "5 min" overlay here using ZStack (outside the scope of this request)
         }
-        .background(Color.white) // Card background color
-        .cornerRadius(10) // Rounded corners for the card
-        .padding(.horizontal, 5) // Optional: Add some horizontal padding if used in a list
+        .background(Color.white)
+        .cornerRadius(10)
+        .padding(.horizontal, 5)
     }
 }
