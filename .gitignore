@@ -61,3 +61,6 @@ Carthage/Build/
 # If you only have Info.plist and no other .plist files to ignore,
 # you can remove the two lines above and ignore specific non-essential
 # .plist files individually if they arise.
+
+# Ignore all Font files
+Fonts/

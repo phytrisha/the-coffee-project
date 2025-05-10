@@ -20,7 +20,7 @@ struct FeedView: View {
 
                 // MARK: - Cafés Around You Section
                 Text("Featured Cafés")
-                    .font(.title2)
+                    .font(Font.custom("Crimson Pro Medium", size: 28))
                     .padding(.leading)
                     .padding(.top)
 
@@ -50,7 +50,7 @@ struct FeedView: View {
 
                 // MARK: - Order Again Section
                 Text("Order again")
-                    .font(.title2)
+                    .font(Font.custom("Crimson Pro Medium", size: 28))
                     .padding(.leading)
                     .padding(.top)
 
