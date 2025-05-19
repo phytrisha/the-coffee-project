@@ -18,6 +18,7 @@ struct ContentView: View {
             ExploreView()
                 .tabItem {
                     Image("Location")
+                    
                 }
 
             SearchView()

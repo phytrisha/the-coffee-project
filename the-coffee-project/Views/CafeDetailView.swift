@@ -6,54 +6,66 @@
 //
 
 import SwiftUI
-
 struct CafeDetailView: View {
     let cafe: Cafe
     @StateObject var detailFetcher = CafeDetailFetcher()
 
+    var featuredDrinks: [Drink] {
+        Array(detailFetcher.drinks.prefix(3))
+    }
+
     var body: some View {
-        VStack {
-            // Display the list of drinks from the detailFetcher
-            if !detailFetcher.drinks.isEmpty {
-                List {
-                    Section("All Drinks") {
-                        // Iterate over the drinks fetched by detailFetcher
-                        ForEach(detailFetcher.drinks) { drink in
-                            // Display properties from the Drink object
-                            HStack {
-                                VStack(alignment: .leading) {
-                                    Text(drink.name)
-                                        .font(.headline)
-                                    // Check if the non-optional description is not empty
-                                    if !drink.description.isEmpty {
-                                        Text(drink.description)
-                                            .font(.caption)
-                                            .foregroundColor(.gray)
-                                    }
-                                }
-                                Spacer()
-                                Text("$\(drink.price, specifier: "%.2f")")
-                                    .font(.subheadline)
+        ScrollView {
+            VStack(alignment: .leading) {
+                
+                // Featured Drinks Section
+                if !featuredDrinks.isEmpty {
+                    Text("Featured Drinks")
+                        .font(Font.custom("Crimson Pro Medium", size: 28))
+                        .padding(.top, 5)
+                        .padding(.horizontal)
+                        .lineLimit(1)
+                        .frame(alignment: .leading)
+
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 15) {
+                            ForEach(featuredDrinks) { drink in
+                                DrinkCard(drink: drink)
                             }
                         }
+                        .padding(.horizontal)
                     }
                 }
-            } else {
-                // Show loading indicator or message while fetching, or if no drinks found
-                ContentUnavailableView("Loading Drinks...", systemImage: "hourglass")
-                    // Check if fetching is complete and list is still empty
-                    // if detailFetcher.isLoading == false { Text("No Drinks Listed") }
+
+                // All Drinks Section
+                if !detailFetcher.drinks.isEmpty {
+                    Text("All Drinks")
+                        .font(Font.custom("Crimson Pro Medium", size: 28))
+                        .padding(.top, 5)
+                        .padding(.horizontal)
+                        .lineLimit(1)
+                        .frame(alignment: .leading)
+
+                    VStack(alignment: .leading) {
+                        ForEach(detailFetcher.drinks) { drink in
+                            DrinkListItem(drink: drink)
+                        }
+                    }
+                } else {
+                    ContentUnavailableView("Loading Drinks...", systemImage: "hourglass")
+                        .padding()
+                }
             }
         }
         .navigationTitle(cafe.name)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
-            // Trigger the fetch for drinks using the cafe's ID when the view appears
-            if let cafeId = cafe.id {
-                detailFetcher.fetchDrinks(forCafeId: cafeId)
-            } else {
-                print("Error: Cafe ID is missing, cannot fetch drinks subcollection.")
-                // Potentially update UI to show an error state
+            if detailFetcher.drinks.isEmpty { // Only fetch if drinks are not already loaded
+                if let cafeId = cafe.id {
+                    detailFetcher.fetchDrinks(forCafeId: cafeId)
+                } else {
+                    print("Error: Cafe ID is missing, cannot fetch drinks subcollection.")
+                }
             }
         }
         // .onDisappear { detailFetcher.stopListening() } // Good practice to stop listener if needed
