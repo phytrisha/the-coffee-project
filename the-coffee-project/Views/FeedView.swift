@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct FeedView: View {
-    @StateObject var fetcher = CafeFetcher() // Your data fetcher
+    @StateObject var fetcher = CafeFetcher()
 
     var body: some View {
         NavigationView {
@@ -25,7 +25,7 @@ struct FeedView: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 15) {
                         ForEach(fetcher.cafes) { cafe in
-                            if cafe.featured ?? false {
+                            if cafe.featured == true {
                                 NavigationLink {
                                     CafeDetailView(cafe: cafe) // Navigate to CafeDetailView, passing the cafe
                                 } label: {
