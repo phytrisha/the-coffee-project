@@ -30,7 +30,10 @@ struct CafeDetailView: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 15) {
                             ForEach(featuredDrinks) { drink in
-                                DrinkCard(drink: drink)
+                                NavigationLink(destination: DrinkDetailView(drink: drink)) {
+                                    DrinkCard(drink: drink)
+                                }
+                                .buttonStyle(PlainButtonStyle()) // Optional: Remove default button styling
                             }
                         }
                         .padding(.horizontal)
@@ -48,7 +51,10 @@ struct CafeDetailView: View {
 
                     VStack(alignment: .leading) {
                         ForEach(detailFetcher.drinks) { drink in
-                            DrinkListItem(drink: drink)
+                            NavigationLink(destination: DrinkDetailView(drink: drink)) {
+                                DrinkListItem(drink: drink)
+                            }
+                            .buttonStyle(PlainButtonStyle()) // Optional: Remove default button styling
                         }
                     }
                 } else {
@@ -70,4 +76,5 @@ struct CafeDetailView: View {
         }
         // .onDisappear { detailFetcher.stopListening() } // Good practice to stop listener if needed
     }
+
 }
