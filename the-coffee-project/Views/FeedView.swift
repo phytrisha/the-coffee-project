@@ -9,6 +9,7 @@ import SwiftUI
 
 struct FeedView: View {
     @StateObject var fetcher = CafeFetcher()
+    @StateObject var orderStore = OrderStore()
 
     var body: some View {
         NavigationView {
@@ -44,14 +45,20 @@ struct FeedView: View {
                     .padding(.leading)
                     .padding(.top)
 
-//                ScrollView(.horizontal, showsIndicators: false) {
-//                    HStack(spacing: 15) {
-//                        ForEach(0..<5) { item in // Example: 5 placeholder cards
-//                            DrinkCard()
-//                        }
-//                    }
-//                    .padding(.horizontal)
-//                }
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 15) {
+                        ForEach(orderStore.latestOrders) { order in
+                            // Pass the 'drink' object from the 'order' to the 'DrinkCard'
+                            DrinkCard(drink: order.items[0])
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+                if orderStore.latestOrders.isEmpty {
+                    Text("No recent orders found.")
+                        .foregroundColor(.gray)
+                        .padding()
+                }
 
                 Spacer()
 

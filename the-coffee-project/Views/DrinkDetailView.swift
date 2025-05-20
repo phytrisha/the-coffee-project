@@ -74,7 +74,6 @@ struct DrinkDetailView: View {
                 } else {
                     print("Not enough credits!")
                 }
-                
             }
             .padding(12)
             .frame(width: 370, alignment: .center)
@@ -211,7 +210,7 @@ struct OrderConfirmationView: View {
             return
         }
 
-        let singleItem = OrderItem(name: drink.name, quantity: 1, price: drink.price)
+        let singleItem = drink
         let newOrder = Order(userId: currentUserId, shopId: currentShopId, item: singleItem)
 
         // Convert the Order struct to a dictionary for Firestore

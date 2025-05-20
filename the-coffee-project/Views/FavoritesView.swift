@@ -29,6 +29,7 @@ struct FavoritesView: View {
                                             CafeListItem(cafe: cafe)
                                         }
                                         .buttonStyle(PlainButtonStyle()) // Optional: Remove default button styling
+                                        .contentShape(Rectangle())
                                     }
                                 }
                             }
