@@ -30,7 +30,7 @@ struct CafeDetailView: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 15) {
                             ForEach(featuredDrinks) { drink in
-                                NavigationLink(destination: DrinkDetailView(drink: drink)) {
+                                NavigationLink(destination: DrinkDetailView(drink: drink, cafe: cafe)) {
                                     DrinkCard(drink: drink)
                                 }
                                 .buttonStyle(PlainButtonStyle()) // Optional: Remove default button styling
@@ -51,7 +51,7 @@ struct CafeDetailView: View {
 
                     VStack(alignment: .leading) {
                         ForEach(detailFetcher.drinks) { drink in
-                            NavigationLink(destination: DrinkDetailView(drink: drink)) {
+                            NavigationLink(destination: DrinkDetailView(drink: drink, cafe: cafe)) {
                                 DrinkListItem(drink: drink)
                             }
                             .buttonStyle(PlainButtonStyle()) // Optional: Remove default button styling
