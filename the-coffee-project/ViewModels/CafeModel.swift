@@ -13,6 +13,7 @@ struct Cafe: Identifiable, Codable, Hashable {
     var name: String
     var description: String
     var imageUrl: String? // imageURL might be optional in Firebase
+    var backgroundImageUrl: String?
     var featured: Bool
     var lat: Float
     var long: Float

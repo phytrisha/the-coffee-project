@@ -64,7 +64,7 @@ struct DrinkDetailView: View {
 
             Spacer()
             
-            Button("Redeem Drink") {
+            Button {
                 if let profile = authService.userProfile {
                     if let userCredits = profile.userCredits {
                         if userCredits > 0 {
@@ -74,14 +74,17 @@ struct DrinkDetailView: View {
                 } else {
                     print("Not enough credits!")
                 }
+            } label: {
+                Text("Redeem Drink")
+                    .padding(12)
+                    .frame(width: 370, alignment: .center)
+                    .background(.accent)
+                    .foregroundColor(.white)
+                    .font(Font.custom("Crimson Pro Medium", size: 20))
+                    .cornerRadius(12)
+                    .padding(.bottom, 16)
+                    .padding(.horizontal)
             }
-            .padding(12)
-            .frame(width: 370, alignment: .center)
-            .background(.accent)
-            .foregroundColor(.white)
-            .font(Font.custom("Crimson Pro Medium", size: 20))
-            .cornerRadius(12)
-            .padding(.bottom, 16)
         }
         .sheet(isPresented: $showingSheet) {
             OrderConfirmationView(showingSheet: $showingSheet, drink: drink, cafe: cafe, currentUserId: authService.currentUser?.uid ?? "", currentShopId: cafe.id ?? "")
@@ -96,6 +99,7 @@ struct OrderConfirmationView: View {
     var drink: Drink
     var cafe: Cafe
     
+    @State private var address: String = "Loading address..."
 
     let currentUserId: String
     let currentShopId: String
@@ -164,7 +168,7 @@ struct OrderConfirmationView: View {
                         }
                         Text(cafe.name)
                             .font(Font.custom("Crimson Pro Medium", size: 28))
-                        Text(cafe.lat.description + ", " + cafe.long.description)
+                        Text(address)
                             .font(.body)
                             .foregroundColor(.gray)
                     }
@@ -173,16 +177,19 @@ struct OrderConfirmationView: View {
                     Spacer()
 
                     // In the future, change this to Swipe to Confirm
-                    Button("Confirm Order") {
+                    Button {
                         confirmOrder()
+                    } label: {
+                        Text("Confirm Order")
+                            .padding(12)
+                            .frame(width: 370, alignment: .center)
+                            .background(.accent)
+                            .foregroundColor(.white)
+                            .font(Font.custom("Crimson Pro Medium", size: 20))
+                            .cornerRadius(12)
+                            .padding(.bottom, 16)
+                            .padding(.horizontal)
                     }
-                    .padding(12)
-                    .frame(width: 370, alignment: .center)
-                    .background(.accent)
-                    .foregroundColor(.white)
-                    .font(Font.custom("Crimson Pro Medium", size: 20))
-                    .cornerRadius(12)
-                    .padding(.horizontal)
                 }
             }
             .navigationTitle("Confirm your order")
@@ -195,6 +202,11 @@ struct OrderConfirmationView: View {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundColor(.gray)
                     }
+                }
+            }
+            .onAppear {
+                reverseGeocode(latitude: cafe.lat, longitude: cafe.long) { resolvedAddress in
+                    self.address = resolvedAddress // Update the state variable with the result
                 }
             }
         }
@@ -264,7 +276,7 @@ struct OrderConfirmationView: View {
                         }
 
                         // Optional: Dismiss the sheet after a short delay
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                             self.showingSheet = false
                         }
                     }

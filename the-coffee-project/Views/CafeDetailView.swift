@@ -25,50 +25,89 @@ struct CafeDetailView: View {
         ScrollView {
             VStack(alignment: .leading) {
                 // Cafe Details
+                AsyncImage(url: URL(string: cafe.backgroundImageUrl ?? "")) { phase in
+                    switch phase {
+                    case .empty:
+                        ProgressView()
+                            .frame(height: 160)
+                            .frame(maxWidth: .infinity)
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .scaledToFill()
+                            .frame(height: 160)
+                            .frame(maxWidth: .infinity)
+                            .clipped()
+                    case .failure:
+                        Image(systemName: "photo.fill")
+                            .resizable()
+                            .scaledToFit() // Use scaledToFit for system images
+                            .frame(height: 160)
+                            .frame(maxWidth: .infinity)
+                            .foregroundColor(.gray)
+                    @unknown default:
+                        // Handle potential future cases
+                        EmptyView()
+                    }
+                }
                 HStack {
                     if let imageUrl = cafe.imageUrl, let url = URL(string: imageUrl) {
                         AsyncImage(url: url) { image in
                             image.resizable()
                                  .aspectRatio(contentMode: .fit)
-                                 .frame(width: 64, height: 64)
-                                 .cornerRadius(999)
+                                 .frame(width: 96, height: 96)
+                                 .clipShape(Circle()) // Clips the image to have rounded corners
+                                 .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 2)
+                                 .overlay(
+                                     Circle() // Defines the shape of the overlay
+                                         .stroke(Color.white, lineWidth: 4) // Strokes the shape to create the border
+                                 )
                         } placeholder: {
                             ProgressView()
-                                .frame(width: 64, height: 64)
+                                .frame(width: 96, height: 96)
+                                .clipShape(Circle()) // Clips the image to have rounded corners
+                                .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 2)
+                                .overlay(
+                                    Circle() // Defines the shape of the overlay
+                                        .stroke(Color.white, lineWidth: 4) // Strokes the shape to create the border
+                                )
                         }
                     } else {
                         Image(systemName: "photo.fill")
                             .resizable()
                             .aspectRatio(contentMode: .fit)
-                            .frame(width: 64, height: 64)
+                            .frame(width: 96, height: 96)
                             .foregroundColor(.gray)
                             .cornerRadius(999)
                     }
-                    
-                    Text(cafe.name)
-                        .font(Font.custom("Crimson Pro Medium", size: 28))
+                    VStack (alignment: .leading) {
+                        Text(cafe.name)
+                            .font(Font.custom("Crimson Pro Medium", size: 28))
+                        Text(address)
+                            .font(.footnote)
+                            .foregroundColor(.gray)
+                    }
+                    .padding(.leading, 8)
                 }
                 .padding(.horizontal)
+                .padding(.top, -16)
 
                 Text(cafe.description)
                     .font(.body)
                     .foregroundColor(.secondary)
-                    .padding(.bottom, 10)
+                    .padding(.vertical, 8)
                     .padding(.horizontal)
-
-                HStack {
-                    Image(systemName: "map.fill")
-                    Text(address)
-                }
-                .font(.footnote)
-                .foregroundColor(.gray)
-                .padding(.horizontal)
+                    .lineLimit(2)
+                
+                Divider()
+                    .padding(.horizontal)
+                    .padding(.top, 8)
                 
                 // Featured Drinks Section
                 if !featuredDrinks.isEmpty {
                     Text("Featured Drinks")
                         .font(Font.custom("Crimson Pro Medium", size: 28))
-                        .padding(.top, 5)
+                        .padding(.top, 16)
                         .padding(.horizontal)
                         .lineLimit(1)
                         .frame(alignment: .leading)
@@ -83,6 +122,7 @@ struct CafeDetailView: View {
                             }
                         }
                         .padding(.horizontal)
+                        .padding(.bottom, 32)
                     }
                 }
 
@@ -90,7 +130,6 @@ struct CafeDetailView: View {
                 if !detailFetcher.drinks.isEmpty {
                     Text("All Drinks")
                         .font(Font.custom("Crimson Pro Medium", size: 28))
-                        .padding(.top, 5)
                         .padding(.horizontal)
                         .lineLimit(1)
                         .frame(alignment: .leading)
@@ -101,6 +140,7 @@ struct CafeDetailView: View {
                                 DrinkListItem(drink: drink)
                             }
                             .buttonStyle(PlainButtonStyle()) // Optional: Remove default button styling
+                            .padding(.vertical, 8)
                         }
                     }
                 } else {
