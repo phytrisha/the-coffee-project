@@ -13,6 +13,7 @@ struct UserProfile: Identifiable, Codable {
     var email: String?
     var firstName: String?
     var lastName: String?
+    var imageUrl: String? // imageURL might be optional in Firebase
     var userCredits: Int?
     var favoriteShops: [String]?
 }

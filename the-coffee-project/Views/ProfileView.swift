@@ -14,37 +14,76 @@ struct ProfileView: View {
     var body: some View {
         VStack {
             if let user = authService.currentUser {
-                Text("Logged in as:")
-                    .font(.headline)
-                Text("Email: \(user.email ?? "N/A")")
-                Text("User ID: \(user.uid)")
-
-                Divider().padding(.vertical)
-
                 // Display custom User Profile info from Firestore
                 if let profile = authService.userProfile {
-                    Text("Profile Details:")
-                        .font(.headline)
-                    Text("First Name: \(profile.firstName ?? "None")")
-                    Text("Last Name: \(profile.lastName ?? "None")")
+                    AsyncImage(url: URL(string: profile.imageUrl ?? "")) { phase in
+                        switch phase {
+                        case .empty:
+                            ProgressView()
+                                .frame(width: 128, height: 128)
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 128, height: 128)
+                                .cornerRadius(999)
+                                .clipped()
+                                .padding(.horizontal)
+                        case .failure:
+                            Image(systemName: "photo.fill")
+                                .resizable()
+                                .scaledToFit() // Use scaledToFit for system images
+                                .frame(width: 128, height: 128)
+                                .cornerRadius(999)
+                                .foregroundColor(.gray)
+                                .padding(.horizontal)
+                        @unknown default:
+                            // Handle potential future cases
+                            EmptyView()
+                        }
+                    }
+                    
+                    Text("\(profile.firstName ?? "None") \(profile.lastName ?? "None")")
+                        .font(Font.custom("Crimson Pro Medium", size: 28))
+                        .padding(.horizontal)
+                        .padding(.top)
+                        .frame(maxWidth: .infinity)
+                    
+                    Text("\(user.email ?? "N/A")")
+                        .font(.subheadline)
+                        .padding(.horizontal)
+                        .frame(maxWidth: .infinity)
+                        .foregroundColor(.gray)
+                    
+                    Divider().padding(.vertical)
+                    
                     Text("Credits: \(profile.userCredits?.description ?? "None")")
+                        .font(Font.custom("Crimson Pro Medium", size: 20))
+                        .padding(.horizontal)
+                        .frame(maxWidth: .infinity)
+                    
                 } else {
                     Text("Fetching user profile...")
                         .foregroundColor(.gray)
                 }
+                
+                Spacer()
 
                 Button("Sign Out") {
                     authService.signOut()
                 }
-                .padding(.top, 20)
-                .buttonStyle(.bordered)
+                .padding(12)
+                .frame(width: 370, alignment: .center)
+                .background(.red)
+                .foregroundColor(.white)
+                .font(Font.custom("Crimson Pro Medium", size: 20))
+                .cornerRadius(12)
+                .padding(.bottom, 16)
 
             } else {
                 // This case should ideally not be reached if ContentView is only shown when isLoggedIn is true
                 Text("User not logged in.")
             }
-
-            Spacer()
         }
         .navigationTitle("Profile")
         .padding()
