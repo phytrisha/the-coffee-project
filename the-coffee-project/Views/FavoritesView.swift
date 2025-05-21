@@ -14,33 +14,30 @@ struct FavoritesView: View {
     
     var body: some View {
         NavigationView {
-            VStack {
-                Text("Favorites")
-                    .font(Font.custom("Crimson Pro Medium", size: 28))
-                    .padding(.leading)
-                    .padding(.top)
-                if let profile = authService.userProfile {
-                    if let shops = profile.favoriteShops {
-                        ForEach(shops, id: \.self) { item in
-                            VStack(alignment: .leading) {
-                                ForEach(fetcher.cafes) { cafe in
-                                    if cafe.id == item {
-                                        NavigationLink(destination: CafeDetailView(cafe: cafe)) {
-                                            CafeListItem(cafe: cafe)
-                                        }
-                                        .buttonStyle(PlainButtonStyle()) // Optional: Remove default button styling
-                                        .contentShape(Rectangle())
-                                    }
+            if let profile = authService.userProfile {
+                if let shops = profile.favoriteShops {
+                    List {
+                        ForEach(shops, id: \.self) { favoriteShopID in
+                            // Find the corresponding cafe from the fetcher's cafes
+                            if let cafe = fetcher.cafes.first(where: { $0.id == favoriteShopID }) {
+                                NavigationLink(destination: CafeDetailView(cafe: cafe)) {
+                                    CafeListItem(cafe: cafe)
                                 }
+                                .buttonStyle(PlainButtonStyle())
+                                .listRowSeparator(.hidden)
+                                .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 16))
+                                .contentShape(Rectangle())
+                                .padding(.vertical, 8)
                             }
                         }
-                    } else {
-                        Text("No favorite shops added yet.")
-                            .foregroundColor(.gray)
                     }
+                    .listStyle(.plain)
+                    .navigationTitle("Favorites")
+                    .navigationBarTitleDisplayMode(.inline)
+                } else {
+                    Text("No favorite shops added yet.")
+                        .foregroundColor(.gray)
                 }
-                
-                Spacer()
             }
         }
     }

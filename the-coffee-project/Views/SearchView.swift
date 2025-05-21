@@ -31,7 +31,7 @@ struct SearchView: View {
                 .buttonStyle(PlainButtonStyle()) // Optional: Remove default button styling
                 .listRowSeparator(.hidden)
                 .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 16))
-                .contentShape(Rectangle()) // <--- Make the entire row area tappable if it becomes a NavigationLink
+                .contentShape(Rectangle())
                 .padding(.vertical, 8)
             }
             .listStyle(.plain)
