@@ -38,12 +38,13 @@ func reverseGeocode(latitude: Float, longitude: Float, completion: @escaping Add
                 placemark.thoroughfare,      // Street name
                 placemark.subThoroughfare,   // Street number
                 placemark.locality,          // City
-                placemark.administrativeArea, // State/Province
-                placemark.postalCode,        // Postal code
-                placemark.country            // Country
+//                placemark.administrativeArea, // State/Province
+//                placemark.postalCode,        // Postal code
+//                placemark.country            // Country
             ].compactMap { $0 }
 
-            var formattedAddress = addressComponents.joined(separator: ", ")
+            // var formattedAddress = addressComponents.joined(separator: ", ")
+            var formattedAddress = addressComponents[0] + " " + addressComponents[1] + ", " + addressComponents[2]
 
             if formattedAddress.isEmpty {
                 formattedAddress = "Address not available"
