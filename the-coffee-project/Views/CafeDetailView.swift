@@ -17,10 +17,6 @@ struct CafeDetailView: View {
     @State private var address: String = "Loading address..."
     @State private var isFavorite: Bool = false
     
-    var featuredDrinks: [Drink] {
-        Array(detailFetcher.drinks.prefix(3))
-    }
-
     var body: some View {
         ScrollView {
             VStack(alignment: .leading) {
@@ -104,26 +100,26 @@ struct CafeDetailView: View {
                     .padding(.top, 8)
                 
                 // Featured Drinks Section
-                if !featuredDrinks.isEmpty {
-                    Text("Featured Drinks")
-                        .font(Font.custom("Crimson Pro Medium", size: 28))
-                        .padding(.top, 16)
-                        .padding(.horizontal)
-                        .lineLimit(1)
-                        .frame(alignment: .leading)
+                Text("Featured Drinks")
+                    .font(Font.custom("Crimson Pro Medium", size: 28))
+                    .padding(.top, 16)
+                    .padding(.horizontal)
+                    .lineLimit(1)
+                    .frame(alignment: .leading)
 
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 15) {
-                            ForEach(featuredDrinks) { drink in
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 15) {
+                        ForEach(detailFetcher.drinks) { drink in
+                            if drink.featured {
                                 NavigationLink(destination: DrinkDetailView(drink: drink, cafe: cafe)) {
                                     DrinkCard(drink: drink)
                                 }
                                 .buttonStyle(PlainButtonStyle()) // Optional: Remove default button styling
                             }
                         }
-                        .padding(.horizontal)
-                        .padding(.bottom, 32)
                     }
+                    .padding(.horizontal)
+                    .padding(.bottom, 32)
                 }
 
                 // All Drinks Section

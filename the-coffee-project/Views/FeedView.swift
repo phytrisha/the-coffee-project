@@ -18,6 +18,7 @@ struct FeedView: View {
                 // Custom header structure -> to do
                 // TopHeaderView()
 
+                // MARK: - Featured Cafes
                 Text("Featured Cafés")
                     .font(Font.custom("Crimson Pro Medium", size: 28))
                     .padding(.leading)

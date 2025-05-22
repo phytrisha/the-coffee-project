@@ -9,6 +9,8 @@ import SwiftUI
 import FirebaseFirestore
 import FirebaseAuth
 
+// MARK: - Drink Detail View
+
 struct DrinkDetailView: View {
     @EnvironmentObject var authService: AuthService
     
@@ -92,6 +94,8 @@ struct DrinkDetailView: View {
     }
 }
 
+// MARK: - Order Confirmation View
+
 struct OrderConfirmationView: View {
     @EnvironmentObject var authService: AuthService
 
@@ -109,87 +113,93 @@ struct OrderConfirmationView: View {
 
     var body: some View {
         NavigationView {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    AsyncImage(url: URL(string: drink.imageUrl ?? "")) { phase in
-                        switch phase {
-                        case .empty:
-                            ProgressView()
-                                .frame(height: 200)
-                                .frame(maxWidth: .infinity)
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .scaledToFill()
-                                .frame(height: 200)
-                                .frame(maxWidth: .infinity)
-                                .cornerRadius(8)
-                                .clipped()
-                                .padding(.horizontal)
-                        case .failure:
-                            Image(systemName: "photo.fill")
-                                .resizable()
-                                .scaledToFit() // Use scaledToFit for system images
-                                .frame(height: 200)
-                                .frame(maxWidth: .infinity)
-                                .cornerRadius(8)
-                                .foregroundColor(.gray)
-                                .padding(.horizontal)
-                        @unknown default:
-                            // Handle potential future cases
-                            EmptyView()
-                        }
+            VStack(alignment: .leading, spacing: 16) {
+                AsyncImage(url: URL(string: drink.imageUrl ?? "")) { phase in
+                    switch phase {
+                    case .empty:
+                        ProgressView()
+                            .frame(height: 200)
+                            .frame(maxWidth: .infinity)
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .scaledToFill()
+                            .frame(height: 200)
+                            .frame(maxWidth: .infinity)
+                            .cornerRadius(8)
+                            .clipped()
+                            .padding(.horizontal)
+                    case .failure:
+                        Image(systemName: "photo.fill")
+                            .resizable()
+                            .scaledToFit() // Use scaledToFit for system images
+                            .frame(height: 200)
+                            .frame(maxWidth: .infinity)
+                            .cornerRadius(8)
+                            .foregroundColor(.gray)
+                            .padding(.horizontal)
+                    @unknown default:
+                        // Handle potential future cases
+                        EmptyView()
                     }
-                    
-                    // Drink Details
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack {
-                            Image(systemName: "cup.and.saucer.fill")
-                                .font(.caption)
-                                .foregroundColor(.gray)
-                            Text("Drink")
-                                .font(.caption)
-                                .foregroundColor(.gray)
-                        }
-                        Text(drink.name)
-                            .font(Font.custom("Crimson Pro Medium", size: 28))
-                    }
-                    .padding(.horizontal)
-
-                    // Location Details
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack {
-                            Image(systemName: "location.fill")
-                                .font(.caption)
-                                .foregroundColor(.gray)
-                            Text("Location")
-                                .font(.caption)
-                                .foregroundColor(.gray)
-                        }
-                        Text(cafe.name)
-                            .font(Font.custom("Crimson Pro Medium", size: 28))
-                        Text(address)
-                            .font(.body)
+                }
+                
+                // Drink Details
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Image(systemName: "cup.and.saucer.fill")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                        Text("Drink")
+                            .font(.caption)
                             .foregroundColor(.gray)
                     }
-                    .padding(.horizontal)
+                    Text(drink.name)
+                        .font(Font.custom("Crimson Pro Medium", size: 28))
+                }
+                .padding(.horizontal)
 
-                    Spacer()
-
-                    // In the future, change this to Swipe to Confirm
-                    Button {
-                        confirmOrder()
-                    } label: {
-                        Text("Confirm Order")
-                            .padding(12)
-                            .frame(width: 370, alignment: .center)
-                            .background(.accent)
-                            .foregroundColor(.white)
-                            .font(Font.custom("Crimson Pro Medium", size: 20))
-                            .cornerRadius(12)
-                            .padding(.bottom, 16)
-                            .padding(.horizontal)
+                // Location Details
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Image(systemName: "location.fill")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                        Text("Location")
+                            .font(.caption)
+                            .foregroundColor(.gray)
                     }
+                    Text(cafe.name)
+                        .font(Font.custom("Crimson Pro Medium", size: 28))
+                    Text(address)
+                        .font(.body)
+                        .foregroundColor(.gray)
+                }
+                .padding(.horizontal)
+
+                Spacer()
+                
+                Text("Show to the Barista to confirm your order.")
+                    .font(.subheadline)
+                    .padding(.horizontal)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
+                    .foregroundColor(.gray)
+                    .lineLimit(2)
+
+                // In the future, change this to Swipe to Confirm
+                Button {
+                    confirmOrder()
+                } label: {
+                    Text("Confirm Order")
+                        .padding(12)
+                        .frame(width: 370, alignment: .center)
+                        .background(.accent)
+                        .foregroundColor(.white)
+                        .font(Font.custom("Crimson Pro Medium", size: 20))
+                        .cornerRadius(12)
+                        .padding(.bottom, 16)
+                        .padding(.horizontal)
                 }
             }
             .navigationTitle("Confirm your order")
@@ -248,7 +258,7 @@ struct OrderConfirmationView: View {
                 self.orderFeedbackMessage = "Order confirmed successfully!"
                 print("Order added with ID: \(orderId)")
                 
-                // --- NEW: Deduct User Credits ---
+                // --- Deduct User Credits ---
                 self.db.collection("users").document(self.currentUserId).updateData([
                     "userCredits": FieldValue.increment(Int64(-1)) // Safely decrement credits by 1
                 ]) { creditsErr in
