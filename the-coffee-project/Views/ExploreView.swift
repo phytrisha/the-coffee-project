@@ -7,14 +7,16 @@
 
 import SwiftUI
 import MapKit
+import CoreLocation
 
 struct ExploreView: View {
     @StateObject var fetcher = CafeFetcher()
+    @StateObject private var locationManager = LocationManager()
 
-    @State private var region = MKCoordinateRegion(
-        center: CLLocationCoordinate2D(latitude: 48.7703888, longitude: 9.158429963196133),
-        span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-    )
+//    @State private var region = MKCoordinateRegion(
+//        center: CLLocationCoordinate2D(latitude: 48.7703888, longitude: 9.158429963196133),
+//        span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+//    )
     
     @State private var selectedCafe: Cafe?
     @State private var cafeToNavigateTo: Cafe?
@@ -22,7 +24,7 @@ struct ExploreView: View {
 
     var body: some View {
         NavigationStack{
-            Map(coordinateRegion: $region, annotationItems: fetcher.cafes) { cafe in
+            Map(coordinateRegion: $locationManager.region, showsUserLocation: true, annotationItems: fetcher.cafes) { cafe in
                 // For each cafe, create a MapAnnotation
                 MapAnnotation(coordinate: CLLocationCoordinate2D(latitude: CLLocationDegrees(cafe.lat), longitude: CLLocationDegrees(cafe.long))) {
                     VStack {
