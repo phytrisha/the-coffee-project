@@ -116,101 +116,111 @@ struct OrderConfirmationView: View {
     var body: some View {
         NavigationView {
             VStack(alignment: .leading, spacing: 16) {
-                AsyncImage(url: URL(string: drink.imageUrl ?? "")) { phase in
-                    switch phase {
-                    case .empty:
-                        ProgressView()
-                            .frame(height: 200)
-                            .frame(maxWidth: .infinity)
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .scaledToFill()
-                            .frame(height: 200)
-                            .frame(maxWidth: .infinity)
-                            .cornerRadius(8)
-                            .clipped()
-                            .padding(.horizontal)
-                    case .failure:
-                        Image(systemName: "photo.fill")
-                            .resizable()
-                            .scaledToFit() // Use scaledToFit for system images
-                            .frame(height: 200)
-                            .frame(maxWidth: .infinity)
-                            .cornerRadius(8)
-                            .foregroundColor(.gray)
-                            .padding(.horizontal)
-                    @unknown default:
-                        // Handle potential future cases
-                        EmptyView()
-                    }
-                }
-                
-                // Drink Details
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack {
-                        Image(systemName: "cup.and.saucer.fill")
-                            .font(.caption)
-                            .foregroundColor(.gray)
-                        Text("Drink")
-                            .font(.caption)
-                            .foregroundColor(.gray)
-                    }
-                    Text(drink.name)
-                        .font(Font.custom("Crimson Pro Medium", size: 28))
-                }
-                .padding(.horizontal)
-
-                // Location Details
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack {
-                        Image(systemName: "location.fill")
-                            .font(.caption)
-                            .foregroundColor(.gray)
-                        Text("Location")
-                            .font(.caption)
-                            .foregroundColor(.gray)
-                    }
-                    Text(cafe.name)
-                        .font(Font.custom("Crimson Pro Medium", size: 28))
-                    Text(address)
-                        .font(.body)
-                        .foregroundColor(.gray)
-                }
-                .padding(.horizontal)
-
-                Spacer()
-                
-                Text("Show to the Barista to confirm your order.")
+                Text("Show this confirmation to the barista in your café.")
                     .font(.subheadline)
                     .padding(.horizontal)
                     .multilineTextAlignment(.center)
                     .frame(maxWidth: .infinity)
                     .foregroundColor(.gray)
                     .lineLimit(2)
-
-// In the future, change this to Swipe to Confirm
-//                Button {
-//                    confirmOrder()
-//                } label: {
-//                    Text("Confirm Order")
-//                        .padding(12)
-//                        .frame(width: 370, alignment: .center)
-//                        .background(.accent)
-//                        .foregroundColor(.white)
-//                        .font(Font.custom("Crimson Pro Medium", size: 20))
-//                        .cornerRadius(12)
-//                        .padding(.bottom, 16)
-//                        .padding(.horizontal)
+                
+//                Dynamic Image of the Drink
+//                AsyncImage(url: URL(string: drink.imageUrl ?? "")) { phase in
+//                    switch phase {
+//                    case .empty:
+//                        ProgressView()
+//                            .frame(height: 370)
+//                            .frame(maxWidth: .infinity)
+//                    case .success(let image):
+//                        image
+//                            .resizable()
+//                            .scaledToFill()
+//                            .frame(height: 370)
+//                            .frame(maxWidth: .infinity)
+//                            .cornerRadius(8)
+//                            .clipped()
+//                            .padding(.horizontal)
+//                    case .failure:
+//                        Image(systemName: "photo.fill")
+//                            .resizable()
+//                            .scaledToFit() // Use scaledToFit for system images
+//                            .frame(height: 370)
+//                            .frame(maxWidth: .infinity)
+//                            .cornerRadius(8)
+//                            .foregroundColor(.gray)
+//                            .padding(.horizontal)
+//                    @unknown default:
+//                        // Handle potential future cases
+//                        EmptyView()
+//                    }
 //                }
-//
+                Spacer()
+                VStack(spacing: 16) {
+                    // Static Image
+                    Image("coffee cup illustration")
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 212, height: 137)
+                        .clipped()
+                        .padding(.horizontal)
+                    
+                    // Drink Details
+                    VStack(spacing: 4) {
+                        HStack {
+                            Image(systemName: "cup.and.saucer.fill")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                            Text("Drink")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                        }
+                        Text(drink.name)
+                            .font(Font.custom("Crimson Pro Medium", size: 28))
+                    }
+                    .padding(.horizontal)
+                    
+                    // Location Details
+                    VStack(spacing: 4) {
+                        HStack {
+                            Image(systemName: "location.fill")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                            Text("Location")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                        }
+                        Text(cafe.name)
+                            .font(Font.custom("Crimson Pro Medium", size: 28))
+                        Text(address)
+                            .font(.body)
+                            .foregroundColor(.gray)
+                    }
+                    .padding(.horizontal)
+                }
+                .padding(.horizontal)
+                .frame(maxWidth: .infinity)
+
+                
+
+                Spacer()
+                
                 ConfirmationSlider(text: "Slide to confirm", foregroundColor: .accent, action: {
                     confirmOrder()
                     showingAlert = true
                     print("Accept action triggered!")
                 })
+                
+                Text("Let the Barista swipe to confirm your order.")
+                    .font(.subheadline)
+                    .padding(.horizontal)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
+                    .foregroundColor(.gray)
+                    .lineLimit(2)
+                    .padding(.bottom, 16)
+
             }
-            .navigationTitle("Confirm your order")
+            .navigationTitle("Thank you for your order!")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
