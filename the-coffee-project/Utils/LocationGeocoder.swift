@@ -42,8 +42,7 @@ func reverseGeocode(latitude: Float, longitude: Float, completion: @escaping Add
 //                placemark.postalCode,        // Postal code
 //                placemark.country            // Country
             ].compactMap { $0 }
-
-            // var formattedAddress = addressComponents.joined(separator: ", ")
+            
             var formattedAddress = addressComponents[0] + " " + addressComponents[1] + ", " + addressComponents[2]
 
             if formattedAddress.isEmpty {

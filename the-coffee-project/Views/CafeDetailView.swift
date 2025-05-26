@@ -79,6 +79,7 @@ struct CafeDetailView: View {
                     VStack (alignment: .leading) {
                         Text(cafe.name)
                             .font(Font.custom("Crimson Pro Medium", size: 28))
+                            .lineLimit(1)
                         Text(address)
                             .font(.footnote)
                             .foregroundColor(.gray)
@@ -93,7 +94,7 @@ struct CafeDetailView: View {
                     .foregroundColor(.secondary)
                     .padding(.vertical, 8)
                     .padding(.horizontal)
-                    .lineLimit(2)
+                    .lineLimit(3)
                 
                 Divider()
                     .padding(.horizontal)

@@ -62,7 +62,7 @@ struct DrinkDetailView: View {
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)
                 .foregroundColor(.gray)
-                .lineLimit(2)
+                .lineLimit(4)
 
             Spacer()
             
@@ -100,6 +100,8 @@ struct OrderConfirmationView: View {
     @EnvironmentObject var authService: AuthService
 
     @Binding var showingSheet: Bool
+    @State private var showingAlert = false
+    
     var drink: Drink
     var cafe: Cafe
     
@@ -187,20 +189,26 @@ struct OrderConfirmationView: View {
                     .foregroundColor(.gray)
                     .lineLimit(2)
 
-                // In the future, change this to Swipe to Confirm
-                Button {
+// In the future, change this to Swipe to Confirm
+//                Button {
+//                    confirmOrder()
+//                } label: {
+//                    Text("Confirm Order")
+//                        .padding(12)
+//                        .frame(width: 370, alignment: .center)
+//                        .background(.accent)
+//                        .foregroundColor(.white)
+//                        .font(Font.custom("Crimson Pro Medium", size: 20))
+//                        .cornerRadius(12)
+//                        .padding(.bottom, 16)
+//                        .padding(.horizontal)
+//                }
+//
+                ConfirmationSlider(text: "Slide to confirm", foregroundColor: .accent, action: {
                     confirmOrder()
-                } label: {
-                    Text("Confirm Order")
-                        .padding(12)
-                        .frame(width: 370, alignment: .center)
-                        .background(.accent)
-                        .foregroundColor(.white)
-                        .font(Font.custom("Crimson Pro Medium", size: 20))
-                        .cornerRadius(12)
-                        .padding(.bottom, 16)
-                        .padding(.horizontal)
-                }
+                    showingAlert = true
+                    print("Accept action triggered!")
+                })
             }
             .navigationTitle("Confirm your order")
             .navigationBarTitleDisplayMode(.inline)
@@ -218,6 +226,15 @@ struct OrderConfirmationView: View {
                 reverseGeocode(latitude: cafe.lat, longitude: cafe.long) { resolvedAddress in
                     self.address = resolvedAddress // Update the state variable with the result
                 }
+            }
+            .alert(isPresented: $showingAlert) {
+                Alert(
+                    title: Text("Order Confirmed"),
+                    message: Text("You successfully ordered a " + drink.name + " at " + cafe.name),
+                    dismissButton: .default(Text("OK"), action: {
+                        showingSheet = false
+                    })
+                )
             }
         }
     }
@@ -285,10 +302,10 @@ struct OrderConfirmationView: View {
                             }
                         }
 
-                        // Optional: Dismiss the sheet after a short delay
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                            self.showingSheet = false
-                        }
+// Optional: Dismiss the sheet after a short delay
+//                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+//                            self.showingSheet = false
+//                        }
                     }
                 }
             }
