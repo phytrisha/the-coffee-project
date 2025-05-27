@@ -10,6 +10,7 @@ import FirebaseFirestore
 
 class CafeFetcher: ObservableObject {
     @Published var cafes: [Cafe] = [] // Array to hold fetched cafes
+    @Published var specificCafe: Cafe?
     private var db = Firestore.firestore() // Firestore database reference
     private var listenerRegistration: ListenerRegistration? // To manage real-time listener
 
@@ -40,6 +41,29 @@ class CafeFetcher: ObservableObject {
                         }
                     }
                 }
+    }
+    
+    func fetchCafe(by shopID: String) {
+        db.collection("shops").document(shopID).getDocument { (documentSnapshot, error) in
+            if let error = error {
+                print("Error fetching specific document: \(error.localizedDescription)")
+                self.specificCafe = nil // Reset in case of error
+                return
+            }
+
+            guard let document = documentSnapshot, document.exists else {
+                print("Document with shopID \(shopID) does not exist.")
+                self.specificCafe = nil
+                return
+            }
+
+            do {
+                self.specificCafe = try document.data(as: Cafe.self)
+            } catch {
+                print("Error decoding specific document \(document.documentID): \(error.localizedDescription)")
+                self.specificCafe = nil
+            }
+        }
     }
 
     // Clean up the listener when the object is deallocated

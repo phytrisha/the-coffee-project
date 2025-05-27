@@ -10,6 +10,8 @@ import SwiftUI
 struct FeedView: View {
     @StateObject var fetcher = CafeFetcher()
     @StateObject var orderStore = OrderStore()
+    
+    @State private var showingScanner = false
 
     var body: some View {
         NavigationView {
@@ -84,6 +86,18 @@ struct FeedView: View {
             }
             .navigationTitle("Your Feed")
             .navigationBarTitleDisplayMode(.large)
+            .navigationBarItems(trailing:
+                Button {
+                    showingScanner = true // Trigger the sheet presentation
+                } label: {
+                    Image(systemName: "qrcode.viewfinder") // SF Symbol for a QR code scanner icon
+                        .font(.title2) // Adjust font size as needed
+                }
+            )
+            .sheet(isPresented: $showingScanner) {
+                // Present the QRCodeScannerView as a sheet
+                QRCodeScannerView()
+            }
         }
     }
 }
