@@ -48,20 +48,6 @@
 			);
 			target = 436DD0512DC4F0FC00CA7211 /* the-coffee-project */;
 		};
-		436DD0942DC4F6EC00CA7211 /* Exceptions for "the-coffee-project" folder in "the-coffee-projectTests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"GoogleService-Info.plist",
-			);
-			target = 436DD05E2DC4F0FD00CA7211 /* the-coffee-projectTests */;
-		};
-		436DD0952DC4F6EC00CA7211 /* Exceptions for "the-coffee-project" folder in "the-coffee-projectUITests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"GoogleService-Info.plist",
-			);
-			target = 436DD0682DC4F0FD00CA7211 /* the-coffee-projectUITests */;
-		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -69,8 +55,6 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				433ED53F2DCF520D004E29B9 /* Exceptions for "the-coffee-project" folder in "the-coffee-project" target */,
-				436DD0942DC4F6EC00CA7211 /* Exceptions for "the-coffee-project" folder in "the-coffee-projectTests" target */,
-				436DD0952DC4F6EC00CA7211 /* Exceptions for "the-coffee-project" folder in "the-coffee-projectUITests" target */,
 			);
 			path = "the-coffee-project";
 			sourceTree = "<group>";

@@ -77,7 +77,7 @@ struct DrinkDetailView: View {
                     print("Not enough credits!")
                 }
             } label: {
-                Text("Redeem Drink")
+                Text("Order Drink")
                     .padding(12)
                     .frame(width: 370, alignment: .center)
                     .background(.accent)
