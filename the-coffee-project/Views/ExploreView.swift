@@ -13,10 +13,7 @@ struct ExploreView: View {
     @StateObject var fetcher = CafeFetcher()
     @StateObject private var locationManager = LocationManager()
 
-//    @State private var region = MKCoordinateRegion(
-//        center: CLLocationCoordinate2D(latitude: 48.7703888, longitude: 9.158429963196133),
-//        span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-//    )
+
     
     @State private var selectedCafe: Cafe?
     @State private var cafeToNavigateTo: Cafe?
