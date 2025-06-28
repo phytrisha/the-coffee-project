@@ -85,7 +85,7 @@ struct FeedView: View {
                 }
             }
             .navigationTitle("Your Feed")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationBarTitleDisplayMode(.inline)
             .navigationBarItems(trailing:
                 Button {
                     showingScanner = true // Trigger the sheet presentation

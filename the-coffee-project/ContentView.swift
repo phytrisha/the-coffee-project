@@ -10,19 +10,19 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         TabView {
-            Tab("Feed", systemImage: "cup.and.saucer") {
+            Tab("Feed", image: "Coffee Cup") {
                 FeedView()
               }
-            Tab("Explore", systemImage: "location") {
+            Tab("Explore", image: "Location") {
                 ExploreView()
             }
-            Tab("Search", systemImage: "magnifyingglass") {
+            Tab("Search", image: "Search") {
                 SearchView()
             }
-            Tab("Favorites", systemImage: "heart") {
+            Tab("Favorites", image: "Favorite") {
                 FavoritesView()
             }
-            Tab("Profile", systemImage: "person.circle") {
+            Tab("Profile", image: "User") {
                 ProfileView()
             }
             
