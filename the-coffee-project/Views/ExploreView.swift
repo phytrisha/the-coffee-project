@@ -34,7 +34,7 @@ struct ExploreView: View {
                     }
                 }
             }
-            .ignoresSafeArea(.all, edges: .top)
+            .ignoresSafeArea(.all)
             .sheet(item: $selectedCafe) { cafe in
                 // Pass a binding to `cafeToNavigateTo` and the dismiss action to the sheet content
                 CafeDetailSheet(cafe: cafe, cafeToNavigateTo: $cafeToNavigateTo) {
