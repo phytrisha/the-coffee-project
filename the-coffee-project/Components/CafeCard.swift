@@ -25,14 +25,14 @@ struct CafeCard: View {
                         .resizable()
                         .scaledToFill()
                         .frame(width: coffeeCardImageWidth, height: coffeeCardImageHeight)
-                        .cornerRadius(12)
+                        .modifier(ThemedCornerRadius(size: .large))
                         .clipped()
                 case .failure:
                     Image(systemName: "photo.fill")
                         .resizable()
                         .scaledToFit() // Use scaledToFit for system images
                         .frame(width: coffeeCardImageWidth, height: coffeeCardImageHeight)
-                        .cornerRadius(12)
+                        .modifier(ThemedCornerRadius(size: .large))
                         .foregroundColor(.gray)
                 @unknown default:
                     // Handle potential future cases

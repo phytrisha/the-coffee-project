@@ -6,27 +6,27 @@
 //
 
 import SwiftUI
-import FirebaseCore // Make sure FirebaseCore or Firebase is imported
+import FirebaseCore
 
 @main
-struct the_coffee_projectApp: App { // Replace with your actual App struct name
-    // Use @StateObject to create and manage the lifecycle of AuthService
+struct the_coffee_projectApp: App {
     @StateObject var authService = AuthService()
+    @StateObject var theme = AppTheme()
 
     init() {
-        FirebaseApp.configure() // Ensure this is called once
-        // The auth state listener logic is now inside AuthService, so remove it from here.
+        FirebaseApp.configure()
     }
 
     var body: some Scene {
         WindowGroup {
-            // Observe authService.isLoggedIn to switch views
             if authService.isLoggedIn {
-                ContentView() // Your main content view
+                ContentView()
                     .environmentObject(authService)
+                    .environmentObject(theme)
             } else {
-                LoginView() // Show the login view
+                LoginView()
                     .environmentObject(authService)
+                    .environmentObject(theme)
             }
         }
     }
