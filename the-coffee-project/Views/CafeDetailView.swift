@@ -20,7 +20,8 @@ struct CafeDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading) {
-                // Cafe Details
+                
+                // MARK: Cafe Background Image
                 AsyncImage(url: URL(string: cafe.backgroundImageUrl ?? "")) { phase in
                     switch phase {
                     case .empty:
@@ -28,12 +29,16 @@ struct CafeDetailView: View {
                             .frame(height: 160)
                             .frame(maxWidth: .infinity)
                     case .success(let image):
-                        image
-                            .resizable()
-                            .scaledToFill()
-                            .frame(height: 160)
-                            .frame(maxWidth: .infinity)
-                            .clipped()
+                        if #available(iOS 26.0, *) {
+                            image
+                                .resizable()
+                                .scaledToFill()
+                                .frame(height: 240)
+                                .frame(maxWidth: .infinity)
+                                .backgroundExtensionEffect()
+                        } else {
+                            // Fallback on earlier versions
+                        }
                     case .failure:
                         Image(systemName: "photo.fill")
                             .resizable()
@@ -46,6 +51,8 @@ struct CafeDetailView: View {
                         EmptyView()
                     }
                 }
+                
+                // MARK: Cafe Header
                 HStack {
                     if let imageUrl = cafe.imageUrl, let url = URL(string: imageUrl) {
                         AsyncImage(url: url) { image in
@@ -100,7 +107,7 @@ struct CafeDetailView: View {
                     .padding(.horizontal)
                     .padding(.top, 8)
                 
-                // Featured Drinks Section
+                // MARK: Featured Drinks Section
                 Text("Featured Drinks")
                     .font(Font.custom("Crimson Pro Medium", size: 28))
                     .padding(.top, 16)
@@ -123,7 +130,7 @@ struct CafeDetailView: View {
                     .padding(.bottom, 32)
                 }
 
-                // All Drinks Section
+                // MARK: All Drinks Section
                 if !detailFetcher.drinks.isEmpty {
                     Text("All Drinks")
                         .font(Font.custom("Crimson Pro Medium", size: 28))
@@ -146,8 +153,9 @@ struct CafeDetailView: View {
                 }
             }
         }
-        .navigationTitle(cafe.name)
-        .navigationBarTitleDisplayMode(.inline)
+        // .navigationTitle(cafe.name)
+        // .navigationBarTitleDisplayMode(.inline)
+        .ignoresSafeArea()
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
@@ -178,6 +186,7 @@ struct CafeDetailView: View {
         // .onDisappear { detailFetcher.stopListening() } // Good practice to stop listener if needed
     }
     
+    // MARK: Toggle Favorite
     // Function to toggle favorite status
     func toggleFavorite() {
         if isFavorite {
@@ -216,6 +225,7 @@ struct CafeDetailView: View {
         }
     }
 
+    // MARK: Check if Favorite
     // Function to check if the current cafe is already a favorite
     func checkIfFavorite() {
         guard let cafeId = cafe.id else { // If currentCafeId could be 'String?', use 'guard let cafeId = currentCafeId else'
@@ -236,5 +246,4 @@ struct CafeDetailView: View {
             }
         }
     }
-
 }

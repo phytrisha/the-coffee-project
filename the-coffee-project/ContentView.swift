@@ -12,7 +12,7 @@ struct ContentView: View {
         TabView {
             Tab("Feed", image: "Coffee Cup") {
                 FeedView()
-              }
+            }
             Tab("Explore", image: "Location") {
                 ExploreView()
             }
