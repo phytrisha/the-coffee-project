@@ -20,37 +20,42 @@ struct CafeDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading) {
-                
                 // MARK: Cafe Background Image
-                AsyncImage(url: URL(string: cafe.backgroundImageUrl ?? "")) { phase in
-                    switch phase {
-                    case .empty:
-                        ProgressView()
-                            .frame(height: 160)
-                            .frame(maxWidth: .infinity)
-                    case .success(let image):
-                        if #available(iOS 26.0, *) {
-                            image
+                GeometryReader { geometry in
+                    AsyncImage(url: URL(string: cafe.backgroundImageUrl ?? "")) { phase in
+                        switch phase {
+                        case .empty:
+                            ProgressView()
+                                .frame(width: geometry.size.width, height: 240)
+                        case .success(let image):
+                            if #available(iOS 26.0, *) {
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: geometry.size.width, height: 240)
+                                    .backgroundExtensionEffect()
+                                    .clipped()
+                            } else {
+                                // Fallback on earlier versions
+                                image
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: geometry.size.width, height: 240)
+                                    .clipped()
+                            }
+                        case .failure:
+                            Image(systemName: "photo.fill")
                                 .resizable()
-                                .scaledToFill()
-                                .frame(height: 240)
-                                .frame(maxWidth: .infinity)
-                                .backgroundExtensionEffect()
-                        } else {
-                            // Fallback on earlier versions
+                                .scaledToFit() // Use scaledToFit for system images
+                                .frame(width: geometry.size.width, height: 240)
+                                .foregroundColor(.gray)
+                        @unknown default:
+                            // Handle potential future cases
+                            EmptyView()
                         }
-                    case .failure:
-                        Image(systemName: "photo.fill")
-                            .resizable()
-                            .scaledToFit() // Use scaledToFit for system images
-                            .frame(height: 160)
-                            .frame(maxWidth: .infinity)
-                            .foregroundColor(.gray)
-                    @unknown default:
-                        // Handle potential future cases
-                        EmptyView()
                     }
                 }
+                .frame(height: 240)
                 
                 // MARK: Cafe Header
                 HStack {
@@ -101,7 +106,7 @@ struct CafeDetailView: View {
                     .foregroundColor(.secondary)
                     .padding(.vertical, 8)
                     .padding(.horizontal)
-                    .lineLimit(3)
+                    .fixedSize(horizontal: false, vertical: true)
                 
                 Divider()
                     .padding(.horizontal)
@@ -152,10 +157,9 @@ struct CafeDetailView: View {
                         .padding()
                 }
             }
+            .frame(maxWidth: .infinity)
         }
-        // .navigationTitle(cafe.name)
-        // .navigationBarTitleDisplayMode(.inline)
-        .ignoresSafeArea()
+        .ignoresSafeArea(.all, edges: [.top])
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
