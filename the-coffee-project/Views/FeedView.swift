@@ -69,15 +69,22 @@ struct FeedView: View {
                             .lineLimit(1)
                             .frame(alignment: .leading)
 
-                        VStack(alignment: .leading) {
+                        // Refactored to List
+                        List {
                             ForEach(fetcher.cafes) { cafe in
                                 NavigationLink(destination: CafeDetailView(cafe: cafe)) {
                                     CafeListItem(cafe: cafe)
                                 }
-                                .buttonStyle(PlainButtonStyle()) // Optional: Remove default button styling
+                                .buttonStyle(PlainButtonStyle())
+                                .listRowSeparator(.hidden)
+                                .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 16))
+                                .contentShape(Rectangle())
                                 .padding(.vertical, 8)
                             }
                         }
+                        .listStyle(.plain)
+                        .scrollDisabled(true)
+                        .frame(height: CGFloat(fetcher.cafes.count) * 80)
                     } else {
                         ContentUnavailableView("Loading Cafés...", systemImage: "hourglass")
                             .padding()
