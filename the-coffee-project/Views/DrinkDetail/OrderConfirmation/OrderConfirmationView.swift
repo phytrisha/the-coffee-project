@@ -8,22 +8,10 @@
 import SwiftUI
 
 struct OrderConfirmationView: View {
-    @EnvironmentObject var authService: AuthService
-    
-    private var drink: Drink
-    private var cafe: Cafe
-    
+    @ObservedObject var viewModel: OrderConfirmationViewModel
     @Binding var isPresented: Bool
     
-    init(drink: Drink, cafe: Cafe, isPresented: Binding<Bool>) {
-        self.drink = drink
-        self.cafe = cafe
-        self._isPresented = isPresented
-    }
-    
     var body: some View {
-        @StateObject var viewModel = OrderConfirmationViewModel(drink: drink, cafe: cafe, authService: authService)
-        
         NavigationView {
             VStack {
                 // ... Your Order Confirmation UI ...
@@ -33,7 +21,6 @@ struct OrderConfirmationView: View {
                     viewModel.confirmOrder()
                 })
             }
-            .onAppear(perform: viewModel.fetchAddress)
             .alert(item: $viewModel.alertItem) { alertItem in
                 Alert(
                     title: alertItem.title,

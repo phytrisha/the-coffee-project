@@ -10,6 +10,7 @@ import SwiftUI
 struct CafeDetailView: View {
     
     let cafe: Cafe
+    @EnvironmentObject var authService: AuthService
     
     @StateObject var detailFetcher = CafeDetailFetcher()
     @StateObject private var firebaseManager = FirebaseManager() // Instantiate your manager
@@ -124,7 +125,7 @@ struct CafeDetailView: View {
                     HStack(spacing: 15) {
                         ForEach(detailFetcher.drinks) { drink in
                             if drink.featured {
-                                NavigationLink(destination: DrinkDetailView(drink: drink, cafe: cafe)) {
+                                NavigationLink(destination: DrinkDetailView(drink: drink, cafe: cafe, authService: authService)) {
                                     DrinkCard(drink: drink)
                                 }
                                 .buttonStyle(PlainButtonStyle()) // Optional: Remove default button styling
@@ -145,7 +146,7 @@ struct CafeDetailView: View {
 
                     VStack(alignment: .leading) {
                         ForEach(detailFetcher.drinks) { drink in
-                            NavigationLink(destination: DrinkDetailView(drink: drink, cafe: cafe)) {
+                            NavigationLink(destination: DrinkDetailView(drink: drink, cafe: cafe, authService: authService)) {
                                 DrinkListItem(drink: drink)
                             }
                             .buttonStyle(PlainButtonStyle()) // Optional: Remove default button styling
@@ -251,3 +252,4 @@ struct CafeDetailView: View {
         }
     }
 }
+

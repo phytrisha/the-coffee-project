@@ -8,12 +8,17 @@
 import SwiftUI
 
 struct DrinkDetailView: View {
-    @EnvironmentObject var authService: AuthService
-    
     var drink: Drink
     var cafe: Cafe
+    @StateObject private var orderConfirmationViewModel: OrderConfirmationViewModel
     
     @State private var showingSheet = false
+    
+    init(drink: Drink, cafe: Cafe, authService: AuthService) {
+        self.drink = drink
+        self.cafe = cafe
+        _orderConfirmationViewModel = StateObject(wrappedValue: OrderConfirmationViewModel(drink: drink, cafe: cafe, authService: authService))
+    }
     
     var body: some View {
         VStack {
@@ -22,17 +27,16 @@ struct DrinkDetailView: View {
             Spacer()
             
             OrderButtonView(showingSheet: $showingSheet)
-                .disabled(authService.userProfile?.userCredits ?? 0 == 0)
+                .disabled(orderConfirmationViewModel.userCredits == 0)
         }
         .sheet(isPresented: $showingSheet) {
             OrderConfirmationView(
-                drink: drink,
-                cafe: cafe,
+                viewModel: orderConfirmationViewModel,
                 isPresented: $showingSheet
             )
-            .environmentObject(authService)
         }
         .navigationTitle(drink.name)
         .navigationBarTitleDisplayMode(.inline)
     }
 }
+

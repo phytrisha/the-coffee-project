@@ -20,6 +20,10 @@ class OrderConfirmationViewModel: ObservableObject {
     private let cafe: Cafe
     private let authService: AuthService
     
+    var userCredits: Int {
+        authService.userProfile?.userCredits ?? 0
+    }
+    
     private var currentShopId: String {
         return cafe.id ?? ""
     }
