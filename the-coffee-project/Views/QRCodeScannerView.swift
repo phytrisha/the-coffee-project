@@ -2,108 +2,53 @@
 //  QRCodeScannerView.swift
 //  the-coffee-project
 //
-//  Created by Mark Meyer on 27.05.25.
+//  Created by Mark Meyer on 17.07.25.
 //
 
 import SwiftUI
 import AVFoundation
 
-// MARK: - QRCodeScannerView
+struct QRCodeScannerView: UIViewControllerRepresentable {
+    var completion: (Result<String, Error>) -> Void
 
-struct QRCodeScannerView: View {
-    @State private var scannedCode: String?
-    @State private var showingCafeDetail = false
-    
-    @StateObject var fetcher = CafeFetcher()
-
-    // This will hold the shopID extracted from the QR code
-    @State private var detectedShopID: String?
-
-    var body: some View {
-        ZStack {
-            // The actual scanner view
-            ScannerViewControllerRepresentable(scannedCode: $scannedCode)
-
-            VStack {
-                Spacer()
-                Text(scannedCode ?? "Scan a QR Code")
-                    .font(.headline)
-                    .padding()
-                    .background(Color.black.opacity(0.7))
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
-                    .padding(.bottom, 20)
-            }
-        }
-        .onChange(of: scannedCode) { newValue in
-            if let code = newValue {
-                // Here, we'll parse the code to get the shopID
-                // For demonstration, let's assume the QR code directly contains the shopID
-                detectedShopID = code
-                fetcher.fetchCafe(by: code)
-                showingCafeDetail = true
-            }
-        }
-        .sheet(isPresented: $showingCafeDetail) {
-            if let scannedCafe = fetcher.specificCafe { // Use fetcher.specificCafe
-                CafeDetailView(cafe: scannedCafe)
-            } else {
-                // Handle the case where the cafe hasn't loaded yet or wasn't found
-                Text("Loading cafe details or cafe not found...")
-            }
-        }
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
     }
-}
 
-// MARK: - ScannerViewControllerRepresentable
-
-struct ScannerViewControllerRepresentable: UIViewControllerRepresentable {
-    @Binding var scannedCode: String?
-
-    func makeUIViewController(context: Context) -> ScannerViewController {
-        let viewController = ScannerViewController()
+    func makeUIViewController(context: Context) -> QRCodeScannerViewController {
+        let viewController = QRCodeScannerViewController()
         viewController.delegate = context.coordinator
         return viewController
     }
 
-    func updateUIViewController(_ uiViewController: ScannerViewController, context: Context) {}
+    func updateUIViewController(_ uiViewController: QRCodeScannerViewController, context: Context) {}
 
-    func makeCoordinator() -> Coordinator {
-        Coordinator(parent: self)
-    }
+    class Coordinator: NSObject, QRCodeScannerViewControllerDelegate {
+        var parent: QRCodeScannerView
 
-    // MARK: Coordinator
-
-    class Coordinator: NSObject, AVCaptureMetadataOutputObjectsDelegate {
-        var parent: ScannerViewControllerRepresentable
-
-        init(parent: ScannerViewControllerRepresentable) {
+        init(_ parent: QRCodeScannerView) {
             self.parent = parent
         }
 
-        func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
-            if let metadataObject = metadataObjects.first {
-                guard let readableObject = metadataObject as? AVMetadataMachineReadableCodeObject else { return }
-                guard let stringValue = readableObject.stringValue else { return }
+        func didFind(code: String) {
+            parent.completion(.success(code))
+        }
 
-                // Vibrate to give feedback that a code was scanned
-                AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
-
-                // Update the scannedCode binding
-                DispatchQueue.main.async {
-                    self.parent.scannedCode = stringValue
-                }
-            }
+        func didFail(error: Error) {
+            parent.completion(.failure(error))
         }
     }
 }
 
-// MARK: - ScannerViewController (UIKit)
+protocol QRCodeScannerViewControllerDelegate: AnyObject {
+    func didFind(code: String)
+    func didFail(error: Error)
+}
 
-class ScannerViewController: UIViewController {
+class QRCodeScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     var captureSession: AVCaptureSession!
     var previewLayer: AVCaptureVideoPreviewLayer!
-    weak var delegate: AVCaptureMetadataOutputObjectsDelegate?
+    weak var delegate: QRCodeScannerViewControllerDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -111,19 +56,23 @@ class ScannerViewController: UIViewController {
         view.backgroundColor = .black
         captureSession = AVCaptureSession()
 
-        guard let videoCaptureDevice = AVCaptureDevice.default(for: .video) else { return }
+        guard let videoCaptureDevice = AVCaptureDevice.default(for: .video) else {
+            delegate?.didFail(error: NSError(domain: "QRCodeScanner", code: -1, userInfo: [NSLocalizedDescriptionKey: "Video capture device not available."]))
+            return
+        }
         let videoInput: AVCaptureDeviceInput
 
         do {
             videoInput = try AVCaptureDeviceInput(device: videoCaptureDevice)
         } catch {
+            delegate?.didFail(error: error)
             return
         }
 
         if (captureSession.canAddInput(videoInput)) {
             captureSession.addInput(videoInput)
         } else {
-            failed()
+            delegate?.didFail(error: NSError(domain: "QRCodeScanner", code: -1, userInfo: [NSLocalizedDescriptionKey: "Could not add video input to the session."]))
             return
         }
 
@@ -132,10 +81,10 @@ class ScannerViewController: UIViewController {
         if (captureSession.canAddOutput(metadataOutput)) {
             captureSession.addOutput(metadataOutput)
 
-            metadataOutput.setMetadataObjectsDelegate(delegate, queue: DispatchQueue.main)
-            metadataOutput.metadataObjectTypes = [.qr] // Specify QR code type
+            metadataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
+            metadataOutput.metadataObjectTypes = [.qr]
         } else {
-            failed()
+            delegate?.didFail(error: NSError(domain: "QRCodeScanner", code: -1, userInfo: [NSLocalizedDescriptionKey: "Could not add metadata output to the session."]))
             return
         }
 
@@ -149,16 +98,19 @@ class ScannerViewController: UIViewController {
         }
     }
 
-    func failed() {
-        let ac = UIAlertController(title: "Scanning not supported", message: "Your device does not support scanning a code from this feature. Please use the camera app.", preferredStyle: .alert)
-        ac.addAction(UIAlertAction(title: "OK", style: .default))
-        present(ac, animated: true)
-        captureSession = nil
+    func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
+        captureSession.stopRunning()
+
+        if let metadataObject = metadataObjects.first {
+            guard let readableObject = metadataObject as? AVMetadataMachineReadableCodeObject else { return }
+            guard let stringValue = readableObject.stringValue else { return }
+            AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
+            delegate?.didFind(code: stringValue)
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
         if (captureSession?.isRunning == false) {
             DispatchQueue.global(qos: .background).async {
                 self.captureSession.startRunning()
@@ -168,17 +120,8 @@ class ScannerViewController: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-
         if (captureSession?.isRunning == true) {
             captureSession.stopRunning()
         }
-    }
-
-    override var prefersStatusBarHidden: Bool {
-        return true
-    }
-
-    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .portrait
     }
 }

@@ -11,145 +11,137 @@ import CoreLocation
 
 @MainActor
 class OrderConfirmationViewModel: ObservableObject {
+    // MARK: - Published Properties
     @Published var address: String = "Loading address..."
     @Published var alertItem: AlertItem?
-    @Published var orderFeedbackMessage: String?
     @Published private(set) var orderSuccessfullyPlaced = false
 
+    // MARK: - Properties
     private let drink: Drink
     private let cafe: Cafe
     private let authService: AuthService
-    
+    private let db = Firestore.firestore()
+
     var userCredits: Int {
         authService.userProfile?.userCredits ?? 0
     }
-    
+
     private var currentShopId: String {
         return cafe.id ?? ""
     }
+    
     private var currentUserId: String {
         return authService.userProfile?.id ?? ""
     }
-    
-    private let db = Firestore.firestore()
-    
-    // Note: AuthService is injected for testability and environment compatibility.
+
+    // MARK: - Initialization
     init(drink: Drink, cafe: Cafe, authService: AuthService) {
         self.drink = drink
         self.cafe = cafe
         self.authService = authService
     }
+
+    // MARK: - Public Methods
     
+    /// Fetches and sets the human-readable address for the cafe's location.
     func fetchAddress() {
         reverseGeocode(latitude: cafe.lat, longitude: cafe.long) { resolvedAddress in
-            self.address = resolvedAddress // Update the state variable with the result
+            self.address = resolvedAddress
         }
     }
-    
-    func confirmOrder() {
-        // Essential check: Ensure userId and shopId are available
-        guard !self.currentUserId.isEmpty, !self.currentShopId.isEmpty else {
-            orderFeedbackMessage = "Error: User or shop ID not available."
-            print("Error: currentUserId or currentShopId is empty.")
+
+    /// Confirms and places the order after validating the scanned QR code.
+    /// - Parameter scannedStoreID: The store ID obtained from the QR code scan.
+    func confirmOrder(with scannedStoreID: String) async {
+        // 1. --- Validate the Scanned QR Code ---
+        // Ensure the scanned ID matches the cafe the user is ordering from.
+        guard scannedStoreID == self.currentShopId else {
+            self.alertItem = AlertContext.invalidQRCode
+            return
+        }
+        
+        // 2. --- Pre-computation Checks ---
+        guard !self.currentUserId.isEmpty else {
+            self.alertItem = AlertContext.invalidUserData
+            print("Error: currentUserId is empty.")
             return
         }
 
-        let singleItem = drink
-        let newOrder = Order(userId: self.currentUserId, shopId: self.currentShopId, item: singleItem)
+        let newOrder = Order(userId: self.currentUserId, shopId: self.currentShopId, item: drink)
 
-        // Convert the Order struct to a dictionary for Firestore
         guard let orderData = try? Firestore.Encoder().encode(newOrder) else {
-            orderFeedbackMessage = "Error: Could not encode order data."
+            self.alertItem = AlertContext.orderFailure
             print("Error: Failed to encode order data.")
             return
         }
 
-        let db = self.db
+        // 3. --- Firestore Transaction ---
+        // Add the order document to the main "orders" collection.
+        do {
+            // Await the result from Firestore directly.
+            let orderRef = try await db.collection("orders").addDocument(data: orderData)
+            
+            // The code only continues after the document is successfully created.
+            let orderId = orderRef.documentID
+            print("Order added with ID: \(orderId)")
+            
+            // Now perform all subsequent actions.
+            await self.performPostOrderActions(orderId: orderId, orderData: orderData)
 
-        // Add the order to the main "orders" collection
-        var orderRef: DocumentReference? = nil
-        orderRef = db.collection("orders").addDocument(data: orderData) { err in
-            if let err = err {
-                Task { @MainActor in
-                    self.orderFeedbackMessage = "Error confirming order: \(err.localizedDescription)"
+        } catch {
+            // Catch any errors from the `await` call.
+            print("Error adding document to 'orders': \(error)")
+            self.alertItem = AlertContext.orderFailure
+        }
+    }
+    
+    // MARK: - Private Helper Methods
+
+    /// Performs all Firestore writes that should occur after the primary order is created.
+    private func performPostOrderActions(orderId: String, orderData: [String: Any]) async {
+        // Create a TaskGroup to run Firestore updates concurrently.
+        await withTaskGroup(of: Bool.self) { group in
+            // Task 1: Decrement user credits.
+            group.addTask {
+                do {
+                    try await self.db.collection("users").document(self.currentUserId).updateData([
+                        "userCredits": FieldValue.increment(Int64(-1))
+                    ])
+                    print("Credits deducted for user \(await self.currentUserId).")
+                    return true
+                } catch {
+                    print("Error deducting credits for user \(await self.currentUserId): \(error)")
+                    return false
                 }
-                print("Error adding document to 'orders': \(err)")
-            } else {
-                guard let orderId = orderRef?.documentID else {
-                    Task { @MainActor in
-                        self.orderFeedbackMessage = "Success! But failed to get order ID."
-                    }
-                    print("Order added, but document ID is nil.")
-                    return
+            }
+            
+            // Task 2: Add order to the shop's sub-collection.
+            group.addTask {
+                do {
+                    try await self.db.collection("shops").document(self.currentShopId).collection("orders").document(orderId).setData(orderData)
+                    print("Order \(orderId) added to shop \(await self.currentShopId)'s orders.")
+                    return true
+                } catch {
+                    print("Error adding order to shop's orders: \(error)")
+                    return false
                 }
-
-                Task { @MainActor in
-                    self.orderFeedbackMessage = "Order confirmed successfully!"
-                }
-                print("Order added with ID: \(orderId)")
-                
-                // --- Deduct User Credits ---
-                let userId = self.currentUserId
-                let shopId = self.currentShopId
-                
-                db.collection("users").document(userId).updateData([
-                    "userCredits": FieldValue.increment(Int64(-1)) // Safely decrement credits by 1
-                ]) { creditsErr in
-                    if let creditsErr = creditsErr {
-                        Task { @MainActor in
-                            self.orderFeedbackMessage = "Order confirmed, but failed to deduct credits: \(creditsErr.localizedDescription)"
-                        }
-                        print("Error deducting credits for user \(userId): \(creditsErr)")
-                    } else {
-                        Task { @MainActor in
-                            self.orderFeedbackMessage = "Order confirmed and credits deducted successfully!"
-                        }
-                        print("Credits deducted for user \(userId).")
-
-                        db.collection("shops").document(shopId).collection("orders").document(orderId).setData(orderData) { shopErr in
-                            if let shopErr = shopErr {
-                                print("Error adding order to shop's orders: \(shopErr)")
-                            } else {
-                                print("Order \(orderId) added to shop \(shopId)'s orders.")
-                            }
-                        }
-
-                        db.collection("users").document(userId).collection("orderHistory").document(orderId).setData(orderData) { userErr in
-                            if let userErr = userErr {
-                                print("Error adding order to user's orderHistory: \(userErr)")
-                            } else {
-                                print("Order \(orderId) added to user \(userId)'s order history.")
-                            }
-                        }
-
-//                      Optional: Dismiss the sheet after a short delay
-//                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-//                            self.showingSheet = false
-//                        }
-                    }
+            }
+            
+            // Task 3: Add order to the user's history sub-collection.
+            group.addTask {
+                do {
+                    try await self.db.collection("users").document(self.currentUserId).collection("orderHistory").document(orderId).setData(orderData)
+                    print("Order \(orderId) added to user \(await self.currentUserId)'s order history.")
+                    return true
+                } catch {
+                    print("Error adding order to user's orderHistory: \(error)")
+                    return false
                 }
             }
         }
+        
+        // After all tasks are complete, update the UI.
+        self.orderSuccessfullyPlaced = true
+        self.alertItem = AlertContext.orderSuccess(drinkName: self.drink.name, cafeName: self.cafe.name)
     }
 }
-
-// You can also create a separate file for these helper structs
-struct AlertItem: Identifiable {
-    let id = UUID()
-    let title: Text
-    let message: Text
-    let dismissButtonText: Text
-}
-
-struct AlertContext {
-    static let invalidUserData = AlertItem(title: Text("Invalid User Data"), message: Text("There was a problem with your user information."), dismissButtonText: Text("OK"))
-    static func orderSuccess(drinkName: String, cafeName: String) -> AlertItem {
-        AlertItem(
-            title: Text("Order Confirmed"),
-            message: Text("Your \(drinkName) from \(cafeName) has been ordered successfully."),
-            dismissButtonText: Text("Great!")
-        )
-    }
-    static let orderFailure = AlertItem(title: Text("Order Failed"), message: Text("There was a problem placing your order."), dismissButtonText: Text("OK"))
-}
-

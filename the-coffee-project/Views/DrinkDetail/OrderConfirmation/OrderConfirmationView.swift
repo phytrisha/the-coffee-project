@@ -10,17 +10,46 @@ import SwiftUI
 struct OrderConfirmationView: View {
     @ObservedObject var viewModel: OrderConfirmationViewModel
     @Binding var isPresented: Bool
-    
+
     var body: some View {
         NavigationView {
-            VStack {
-                // ... Your Order Confirmation UI ...
-                // You can further break this down if needed
+            ZStack {
+                // MARK: - View 1: The Scanner
+                QRCodeScannerView { result in
+                    switch result {
+                    case .success(let code):
+                        // Call the async function from within a Task
+                        Task {
+                            await viewModel.confirmOrder(with: code)
+                        }
+                    case .failure(let error):
+                        // Handle scanning errors
+                        print("Error")
+                        // viewModel.presentAlert(with: .init(
+                        //    title: Text("Scanning Error"),
+                        //    message: Text(error.localizedDescription),
+                        //    dismissButtonText: Text("OK") // Changed "OK" to Text("OK")
+                        //))
+                    }
+                }
+                .edgesIgnoringSafeArea(.all) // Modifier for the scanner
+
+                // MARK: - View 2: The Overlay
+                VStack {
+                    Spacer()
+
+                    Text("Point the camera at the store's QR code to confirm.")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .multilineTextAlignment(.center)
+                        .padding()
+                        .background(Color.black.opacity(0.6))
+                        .cornerRadius(12)
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 60)
+                }
                 
-                ConfirmationSlider(text: "Slide to confirm", action: {
-                    viewModel.confirmOrder()
-                })
-            }
+            } // End of ZStack
             .alert(item: $viewModel.alertItem) { alertItem in
                 Alert(
                     title: alertItem.title,
@@ -32,15 +61,18 @@ struct OrderConfirmationView: View {
                     }
                 )
             }
-            .navigationTitle("Thank You!")
+            .navigationTitle("Confirm Order")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(action: { isPresented = false }) {
                         Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(.gray)
+                            .font(.title2)
+                            .foregroundColor(.white)
+                            .background(Circle().fill(Color.black.opacity(0.6)))
                     }
                 }
             }
-        }
+        } // End of NavigationView
     }
 }
