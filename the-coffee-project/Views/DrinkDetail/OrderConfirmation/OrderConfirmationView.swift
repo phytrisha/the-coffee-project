@@ -49,7 +49,7 @@ struct OrderConfirmationView: View {
                         .padding(.bottom, 60)
                 }
                 
-            } // End of ZStack
+            }
             .alert(item: $viewModel.alertItem) { alertItem in
                 Alert(
                     title: alertItem.title,
@@ -73,6 +73,6 @@ struct OrderConfirmationView: View {
                     }
                 }
             }
-        } // End of NavigationView
+        }
     }
 }

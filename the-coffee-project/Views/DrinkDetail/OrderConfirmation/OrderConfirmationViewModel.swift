@@ -55,7 +55,23 @@ class OrderConfirmationViewModel: ObservableObject {
     func confirmOrder(with scannedStoreID: String) async {
         // 1. --- Validate the Scanned QR Code ---
         // Ensure the scanned ID matches the cafe the user is ordering from.
-        guard scannedStoreID == self.currentShopId else {
+
+        // Define the invisible "Word Joiner" character using its Unicode value.
+        let wordJoiner = "\u{2060}" // Unicode value for character 8288 is 2060 in hex
+
+        // Explicitly remove this specific character from the scanned ID.
+        let cleanScannedID = scannedStoreID.replacingOccurrences(of: wordJoiner, with: "")
+
+        // As a best practice, it's still wise to trim standard whitespace as well.
+        let fullyCleanedID = cleanScannedID.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // For safety, also trim the ID you are comparing against.
+        let cleanCurrentID = self.currentShopId.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // Your guard statement now compares the two fully cleaned strings.
+        guard fullyCleanedID == cleanCurrentID else {
+            print("Comparison still failed. This should not happen now.")
+            // You can keep the forensic logs here for debugging if needed.
             self.alertItem = AlertContext.invalidQRCode
             return
         }
